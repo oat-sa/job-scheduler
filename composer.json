@@ -1,11 +1,11 @@
 {
-    "name": "hutnikau/job-scheduler",
+    "name": "oat-sa/job-scheduler",
     "type": "library",
     "description": "PHP job scheduler",
     "keywords": [
         "scheduler"
     ],
-    "homepage": "https://github.com/hutnikau/job-scheduler",
+    "homepage": "https://github.com/oat-sa/job-scheduler",
     "license": "MIT",
     "authors": [
         {
@@ -13,17 +13,23 @@
             "email": "goodnickoff@gmail.com",
             "homepage": "https://github.com/hutnikau",
             "role": "Developer"
+        },
+        {
+            "homepage": "http://www.taotesting.com",
+            "name": "Open Assessment Technologies S.A."
         }
     ],
     "require": {
-        "php" : ">=5.6.0",
+        "php" : ">=8.1",
         "simshaun/recurr" : "~3.0.0",
         "mtdowling/cron-expression": "~1.2.0",
         "jeremeamia/superclosure": "^2.0",
-        "doctrine/dbal" : "~2.5"
+        "doctrine/dbal": "^3.10"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7.16",
+        "phpunit/phpunit": "^9.0",
+        "phpspec/prophecy": "^1.17",
+        "phpspec/prophecy-phpunit": "^2.0",
         "squizlabs/php_codesniffer": "^2.3"
     },
     "autoload": {

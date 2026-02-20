@@ -114,7 +114,7 @@ class CallableAction implements ActionInterface
             $result .= serialize($callable[0]);
         } else if ($callable instanceof \Closure) {
             $serializer = new Serializer();
-            return $serializer->serialize($callable);
+            return md5($serializer->serialize($callable));
         } else if (is_object($callable)) {
             $result = serialize($callable);
         }

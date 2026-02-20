@@ -8,7 +8,7 @@ use Scheduler\ActionInspector\RdsActionInspector;
 use PHPUnit\Framework\TestCase;
 use Scheduler\Job\Job;
 use Scheduler\Job\RRule;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 
 /**
  * Class RdsActionInspectorTest

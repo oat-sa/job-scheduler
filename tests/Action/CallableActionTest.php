@@ -96,11 +96,9 @@ class CallableActionTest extends TestCase
         $this->assertEquals('foo', $action->getReport());
     }
 
-    /**
-     * @expectedException Scheduler\Exception\SchedulerException
-     */
     public function testGetReportException()
     {
+        $this->expectException(\Scheduler\Exception\SchedulerException::class);
         $job = new Job($this->getRRule(), function ($action) {
             return $action->getState();
         });
