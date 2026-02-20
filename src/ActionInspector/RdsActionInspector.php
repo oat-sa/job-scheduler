@@ -4,8 +4,8 @@ namespace Scheduler\ActionInspector;
 
 use Scheduler\Action\ActionInterface;
 use Scheduler\Exception\SchedulerException;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Types\Types;
 
 /**
  * Class RdsActionInspector
@@ -46,7 +46,7 @@ class RdsActionInspector extends AbstractActionInspector
         try {
             $selectQb = $this->getSelectQuery($actionId);
 
-            if ($dbResult = $selectQb->execute()->fetch(\PDO::FETCH_ASSOC)) {
+            if ($dbResult = $selectQb->executeQuery()->fetchAssociative()) {
                 $previousState = $dbResult[self::COLUMN_STATE];
                 $qb = $this->getUpdateQuery($actionState, $actionId);
             } else {
@@ -59,9 +59,9 @@ class RdsActionInspector extends AbstractActionInspector
             }
 
             if ($this->isStateAllowed($action, $previousState)) {
-                $result = $qb->execute() === 1;
+                $result = $qb->executeStatement() === 1;
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $result = false;
         }
 
@@ -139,7 +139,7 @@ class RdsActionInspector extends AbstractActionInspector
 
     /**
      * @param \Doctrine\DBAL\Connection $connection
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public static function initDb(\Doctrine\DBAL\Connection $connection)
     {
@@ -147,15 +147,15 @@ class RdsActionInspector extends AbstractActionInspector
         $schema = $schemaManager->createSchema();
         $fromSchema = clone $schema;
         $table = $schema->createTable(self::TABLE_NAME);
-        $table->addColumn(static::COLUMN_ID, TYPE::STRING, ['length' => 255, 'notnull' => true]);
-        $table->addColumn(static::COLUMN_STATE, TYPE::STRING, ['length' => 255, 'notnull' => true]);
-        $table->addColumn(static::COLUMN_REPORT, TYPE::TEXT, ['notnull' => false]);
-        $table->addColumn(static::COLUMN_CREATED_AT, TYPE::DATETIME, ['notnull' => true]);
+        $table->addColumn(static::COLUMN_ID, Types::STRING, ['length' => 255, 'notnull' => true]);
+        $table->addColumn(static::COLUMN_STATE, Types::STRING, ['length' => 255, 'notnull' => true]);
+        $table->addColumn(static::COLUMN_REPORT, Types::TEXT, ['notnull' => false]);
+        $table->addColumn(static::COLUMN_CREATED_AT, Types::DATETIME_MUTABLE, ['notnull' => true]);
         $table->setPrimaryKey([static::COLUMN_ID]);
         $table->addIndex([static::COLUMN_ID], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_ID);
         $queries = $fromSchema->getMigrateToSql($schema, $connection->getDatabasePlatform());
         foreach ($queries as $query) {
-            $connection->exec($query);
+            $connection->executeStatement($query);
         }
     }
 
@@ -167,7 +167,7 @@ class RdsActionInspector extends AbstractActionInspector
         $schema->dropTable(self::TABLE_NAME);
         $queries = $fromSchema->getMigrateToSql($schema, $connection->getDatabasePlatform());
         foreach ($queries as $query) {
-            $connection->exec($query);
+            $connection->executeStatement($query);
         }
     }
 }

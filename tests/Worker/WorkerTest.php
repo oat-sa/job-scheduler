@@ -7,6 +7,7 @@ use Scheduler\Worker\Worker;
 use Scheduler\Scheduler;
 use Scheduler\Job\RRule;
 use Scheduler\Job\Job;
+use Scheduler\Exception\SchedulerException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -56,20 +57,16 @@ class WorkerTest extends TestCase
         $this->assertEquals(count($jobs), count($performedActionIds));
     }
 
-    /**
-     * @expectedException Scheduler\Exception\SchedulerException
-     */
     public function testSetMaxIterationsException()
     {
+        $this->expectException(SchedulerException::class);
         $worker = new Worker($this->getJobRunner(), new Scheduler());
         $worker->setMaxIterations('foo');
     }
 
-    /**
-     * @expectedException Scheduler\Exception\SchedulerException
-     */
     public function testRunException()
     {
+        $this->expectException(SchedulerException::class);
         $worker = new Worker($this->getJobRunner(), new Scheduler());
         $worker->run('foo', 'PT1S');
     }
@@ -102,7 +99,7 @@ class WorkerTest extends TestCase
                     $reports->arr[] = $jubNum;
                     return $jubNum;
                 }));
-            $jobs[] = $this->getJob($startTime + $jubNum, 'FREQ=MONTHLY;COUNT=5', $callbackMock);
+            $jobs[] = $this->getJob($startTime + $jubNum, $callbackMock, 'FREQ=MONTHLY;COUNT=5');
         }
         $scheduler = new Scheduler($jobs);
 
@@ -111,11 +108,11 @@ class WorkerTest extends TestCase
 
     /**
      * @param integer $start
-     * @param string $rrule
      * @param callback $callbackMock
+     * @param string $rrule
      * @return Job
      */
-    private function getJob($start, $rrule = 'FREQ=MONTHLY;COUNT=5', $callbackMock)
+    private function getJob($start, $callbackMock, $rrule = 'FREQ=MONTHLY;COUNT=5')
     {
         $timezone = 'UTC';
         $startDate = \DateTime::createFromFormat('U', $start, new \DateTimeZone($timezone));
