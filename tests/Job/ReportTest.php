@@ -3,7 +3,6 @@
 namespace SchedulerTests\Job;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Scheduler\Action\Report;
 use Scheduler\Action\ActionInterface;
 
@@ -14,28 +13,24 @@ use Scheduler\Action\ActionInterface;
  */
 class ReportTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testGetResult()
     {
-        $actionProphesy = $this->prophesize(ActionInterface::class);
-        $report = new Report($actionProphesy->reveal(), 'foo');
+        $action = $this->createMock(ActionInterface::class);
+        $report = new Report($action, 'foo');
         $this->assertEquals('foo', $report->getResult());
     }
 
     public function testGetAction()
     {
-        $actionProphesy = $this->prophesize(ActionInterface::class);
-        $action = $actionProphesy->reveal();
+        $action = $this->createMock(ActionInterface::class);
         $report = new Report($action, 'foo');
         $this->assertEquals($action, $report->getAction());
     }
 
     public function testGetType()
     {
-        $actionProphesy = $this->prophesize(ActionInterface::class);
-        $report = new Report($actionProphesy->reveal(), 'foo');
+        $action = $this->createMock(ActionInterface::class);
+        $report = new Report($action, 'foo');
         $this->assertEquals(Report::TYPE_SUCCESS, $report->getType());
     }
-
 }
