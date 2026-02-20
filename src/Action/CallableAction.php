@@ -5,7 +5,7 @@ namespace Scheduler\Action;
 use Scheduler\Exception\SchedulerException;
 use Scheduler\Job\JobInterface;
 use \DateTimeInterface;
-use SuperClosure\Serializer;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class CallableTask
@@ -113,8 +113,7 @@ class CallableAction implements ActionInterface
             $result = is_object($callableEntity) ? get_class($callableEntity) : serialize($callableEntity);
             $result .= serialize($callable[0]);
         } else if ($callable instanceof \Closure) {
-            $serializer = new Serializer();
-            return md5($serializer->serialize($callable));
+            return md5(serialize(new SerializableClosure($callable)));
         } else if (is_object($callable)) {
             $result = serialize($callable);
         }
